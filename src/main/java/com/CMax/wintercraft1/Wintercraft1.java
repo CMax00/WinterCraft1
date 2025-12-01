@@ -20,7 +20,7 @@ public class Wintercraft1 implements ModInitializer {
         // Jobs laden
         JobManager.init();
 
-        // Server startet -> optional reload
+        // Server stoppt -> Jobs speichern
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             JobManager.save();
             LOGGER.info("Jobs saved on server stopping.");
