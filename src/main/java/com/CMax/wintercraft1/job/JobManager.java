@@ -23,30 +23,45 @@ public class JobManager {
 
     public static synchronized void init() {
         try {
-            if (Files.notExists(CONFIG_DIR)) Files.createDirectories(CONFIG_DIR);
+            if (Files.notExists(CONFIG_DIR)) {
+                Files.createDirectories(CONFIG_DIR);
+                Wintercraft1.LOGGER.info("Created config directory");
+            }
+
             if (Files.exists(JOBS_FILE)) {
                 String content = Files.readString(JOBS_FILE, StandardCharsets.UTF_8);
+                if (content.trim().isEmpty()) {
+                    Wintercraft1.LOGGER.warn("jobs.json is empty, initializing with empty data");
+                    save();
+                    return;
+                }
+
                 Map<String, List<String>> map = GSON.fromJson(content, MAP_TYPE);
                 if (map != null) {
                     map.forEach((k, v) -> {
                         try {
                             UUID uuid = UUID.fromString(k);
                             Set<Job> jobs = new HashSet<>();
-                            for (String jobName : v) {
-                                Job job = Job.fromString(jobName);
-                                if (job != null && job != Job.NONE) {
-                                    jobs.add(job);
+                            if (v != null) {
+                                for (String jobName : v) {
+                                    Job job = Job.fromString(jobName);
+                                    if (job != null && job != Job.NONE) {
+                                        jobs.add(job);
+                                    }
                                 }
                             }
                             if (!jobs.isEmpty()) {
                                 JOBS.put(uuid, jobs);
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception e) {
+                            Wintercraft1.LOGGER.warn("Failed to parse job entry for " + k + ": " + e.getMessage());
+                        }
                     });
                 }
                 Wintercraft1.LOGGER.info("Loaded jobs for " + JOBS.size() + " players");
             } else {
-                save(); // create empty file
+                Wintercraft1.LOGGER.info("jobs.json not found, creating new file");
+                save();
             }
         } catch (IOException e) {
             Wintercraft1.LOGGER.error("Failed to load jobs.json", e);

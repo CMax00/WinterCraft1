@@ -43,11 +43,16 @@ public class JobCommand {
                                                 for (GameProfile profile : profiles) {
                                                     ServerPlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(profile.getId());
                                                     if (player != null) {
-                                                        JobManager.addJob(player, job);
-                                                        player.sendMessage(Text.literal("Job '" + job.name() + "' wurde hinzugefügt."));
-                                                        context.getSource().sendFeedback(() -> Text.literal("Job '" + job.name() + "' für " + profile.getName() + " hinzugefügt."), false);
+                                                        if (JobManager.hasJob(player, job)) {
+                                                            player.sendMessage(Text.literal("§cDu hast bereits den Job '" + job.name() + "'."));
+                                                            context.getSource().sendFeedback(() -> Text.literal("§c" + profile.getName() + " hat bereits Job '" + job.name() + "'."), false);
+                                                        } else {
+                                                            JobManager.addJob(player, job);
+                                                            player.sendMessage(Text.literal("§aJob '" + job.name() + "' wurde hinzugefügt."));
+                                                            context.getSource().sendFeedback(() -> Text.literal("§aJob '" + job.name() + "' für " + profile.getName() + " hinzugefügt."), false);
+                                                        }
                                                     } else {
-                                                        context.getSource().sendFeedback(() -> Text.literal("Spieler nicht online: " + profile.getName()), false);
+                                                        context.getSource().sendFeedback(() -> Text.literal("§cSpieler nicht online: " + profile.getName()), false);
                                                     }
                                                 }
 
@@ -84,13 +89,14 @@ public class JobCommand {
                                                     if (player != null) {
                                                         boolean removed = JobManager.removeJob(player, job);
                                                         if (removed) {
-                                                            player.sendMessage(Text.literal("Job '" + job.name() + "' wurde entfernt."));
-                                                            context.getSource().sendFeedback(() -> Text.literal("Job '" + job.name() + "' von " + profile.getName() + " entfernt."), false);
+                                                            player.sendMessage(Text.literal("§eJob '" + job.name() + "' wurde entfernt."));
+                                                            context.getSource().sendFeedback(() -> Text.literal("§eJob '" + job.name() + "' von " + profile.getName() + " entfernt."), false);
                                                         } else {
-                                                            context.getSource().sendFeedback(() -> Text.literal(profile.getName() + " hatte Job '" + job.name() + "' nicht."), false);
+                                                            player.sendMessage(Text.literal("§cDu hattest Job '" + job.name() + "' nicht."));
+                                                            context.getSource().sendFeedback(() -> Text.literal("§c" + profile.getName() + " hatte Job '" + job.name() + "' nicht."), false);
                                                         }
                                                     } else {
-                                                        context.getSource().sendFeedback(() -> Text.literal("Spieler nicht online: " + profile.getName()), false);
+                                                        context.getSource().sendFeedback(() -> Text.literal("§cSpieler nicht online: " + profile.getName()), false);
                                                     }
                                                 }
 
@@ -113,17 +119,21 @@ public class JobCommand {
                                             if (player != null) {
                                                 Set<Job> jobs = JobManager.getJobs(player);
                                                 if (jobs.isEmpty()) {
-                                                    context.getSource().sendFeedback(() -> Text.literal(profile.getName() + " hat keine Jobs."), false);
+                                                    context.getSource().sendFeedback(() -> Text.literal("§7" + profile.getName() + " hat keine Jobs."), false);
                                                 } else {
                                                     StringBuilder jobList = new StringBuilder();
-                                                    jobs.forEach(job -> {
-                                                        if (jobList.length() > 0) jobList.append(", ");
+                                                    boolean first = true;
+                                                    for (Job job : jobs) {
+                                                        if (!first) jobList.append("§7, §a");
+                                                        else jobList.append("§a");
                                                         jobList.append(job.name());
-                                                    });
-                                                    context.getSource().sendFeedback(() -> Text.literal(profile.getName() + "'s Jobs: " + jobList), false);
+                                                        first = false;
+                                                    }
+                                                    String finalJobList = jobList.toString();
+                                                    context.getSource().sendFeedback(() -> Text.literal("§6" + profile.getName() + "§7's Jobs: " + finalJobList), false);
                                                 }
                                             } else {
-                                                context.getSource().sendFeedback(() -> Text.literal("Spieler nicht online: " + profile.getName()), false);
+                                                context.getSource().sendFeedback(() -> Text.literal("§cSpieler nicht online: " + profile.getName()), false);
                                             }
                                         }
 
