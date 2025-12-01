@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "wintercraft1",
+  "version": "${version}",
+  "name": "WinterCraft1",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/wintercraft1/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "fabric-datagen": [
+      "com.CMax.wintercraft1.client.Wintercraft1DataGenerator"
+    ],
+    "main": [
+      "com.CMax.wintercraft1.Wintercraft1"
+    ]
+  },
+  "mixins": [
+    "wintercraft1.mixins.json",
+    {
+      "config": "wintercraft1.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
