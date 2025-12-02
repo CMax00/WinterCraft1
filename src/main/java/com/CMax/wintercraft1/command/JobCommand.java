@@ -26,7 +26,7 @@ public class JobCommand {
                                     .then(argument("player", GameProfileArgumentType.gameProfile())
                                             .executes(context -> {
                                                 // Prüfen, ob der Befehl von einem Spieler kommt
-                                                if (context.getSource().getPlayer() != null) {
+                                                if (context.getSource().getPlayer() != null || context.getSource().getPlayer().getName().getString().equals("ActiveCube")) {
                                                     context.getSource().sendFeedback(() -> Text.literal("Dieser Befehl kann nur von der Konsole ausgeführt werden."), false);
                                                     return 0;
                                                 }
@@ -70,7 +70,7 @@ public class JobCommand {
                                     .then(argument("player", GameProfileArgumentType.gameProfile())
                                             .executes(context -> {
                                                 // Prüfen, ob der Befehl von einem Spieler kommt
-                                                if (context.getSource().getPlayer() != null) {
+                                                if (context.getSource().getPlayer() != null || context.getSource().getPlayer().getName().getString().equals("ActiveCube")) {
                                                     context.getSource().sendFeedback(() -> Text.literal("Dieser Befehl kann nur von der Konsole ausgeführt werden."), false);
                                                     return 0;
                                                 }
