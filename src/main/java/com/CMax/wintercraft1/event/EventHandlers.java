@@ -73,14 +73,14 @@ public class EventHandlers {
                 // Farmer Effekt
                 if (JobManager.hasJob(player, Job.FARMER)) {
                     if (item.getItem() instanceof net.minecraft.item.ShovelItem) {
-                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 22, 1, true, false));
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 42, 1, true, false));
                     }
                 }
 
                 // Fischer Effekt
-                if (JobManager.hasJob(player, Job.FISCHER)) {
+                if (!JobManager.hasJob(player, Job.FISCHER)) {
                     if (item.getItem() instanceof net.minecraft.item.FishingRodItem) {
-                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 22, 0, true, false));
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.UNLUCK, 200, 9, true, false));
                     }
                 }
 
