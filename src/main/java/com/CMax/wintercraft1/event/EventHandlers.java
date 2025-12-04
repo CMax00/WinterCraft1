@@ -7,7 +7,9 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SaplingBlock;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -45,6 +47,14 @@ public class EventHandlers {
                 return ActionResult.FAIL;
             }
 
+            if(player.getStackInHand(hand).getItem() instanceof BlockItem blockItem){
+                if (blockItem.getBlock() instanceof SaplingBlock && !JobManager.hasJob(sp, Job.HOLZHACKER)) {
+                    sp.sendMessage(Text.literal("Nur der Holzhacker kan Saplings platzieren!"));
+                    return ActionResult.FAIL;
+                }
+            }
+
+
             return ActionResult.PASS;
         });
     }
@@ -55,9 +65,12 @@ public class EventHandlers {
             Block block = state.getBlock();
 
             // Miner -> Ancient Debris
-            if (block == Blocks.ANCIENT_DEBRIS && !JobManager.hasJob(sp, Job.MINER)) {
-                sp.sendMessage(Text.literal("Nur ein Minenarbeiter kann Ancient Debris abbauen!"));
-                return false;
+            if (block == Blocks.ANCIENT_DEBRIS || block == Blocks.DIAMOND_ORE || block == Blocks.DEEPSLATE_DIAMOND_ORE) {
+                if (!JobManager.hasJob(sp, Job.MINER)){
+                    sp.sendMessage(Text.literal("Nur ein Minenarbeiter kann diesen Block abbauen!"));
+                    return false;
+                }
+
             }
 
             return true;
@@ -78,9 +91,9 @@ public class EventHandlers {
                 }
 
                 // Fischer Effekt
-                if (!JobManager.hasJob(player, Job.FISCHER)) {
+                if (JobManager.hasJob(player, Job.FISCHER)) {
                     if (item.getItem() instanceof net.minecraft.item.FishingRodItem) {
-                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.UNLUCK, 200, 9, true, false));
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 200, 2, true, false));
                     }
                 }
 
@@ -90,6 +103,10 @@ public class EventHandlers {
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 220, 3, true, false));
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 220, 3, true, false));
                     }
+                }
+
+                if (player.getY() <= -20 && !JobManager.hasJob(player, Job.MINER)){
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 60, 0, true, false));
                 }
             }
         });
